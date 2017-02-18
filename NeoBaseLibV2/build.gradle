@@ -1,31 +1,60 @@
 apply plugin: 'com.android.library'
+apply plugin: 'android-apt'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true" //debug开关
+            minifyEnabled false //是否进行混淆
+        }
         release {
-            minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            minifyEnabled false //是否进行混淆
+            //混淆文件的位置
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true//Zipalign优化
+            shrinkResources true // 移除无用的resource文件
         }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:design:+'
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.facebook.fresco:fresco:0.12.0'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
+    compile 'com.orhanobut:logger:1.15'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'in.srain.cube:ultra-ptr:1.0.11'
 }
