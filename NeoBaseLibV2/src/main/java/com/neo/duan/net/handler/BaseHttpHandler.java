@@ -1,17 +1,11 @@
 package com.neo.duan.net.handler;
 
-import android.text.TextUtils;
-
-import com.alibaba.fastjson.JSON;
 import com.neo.duan.BuildConfig;
-import com.neo.duan.entity.base.BaseInfo;
 import com.neo.duan.net.listener.BaseHttpResponseListener;
 import com.neo.duan.net.listener.IHttpListener;
-import com.neo.duan.net.request.base.BaseRequest;
-import com.neo.duan.net.response.BaseResponse;
-import com.neo.duan.utils.DESUtils;
+import com.neo.duan.net.request.IBaseRequest;
+import com.neo.duan.net.response.IBaseResponse;
 import com.neo.duan.utils.LogUtils;
-import com.neo.duan.utils.constants.Constants;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -23,16 +17,17 @@ import retrofit2.Response;
 
 
 /**
- * @author : neo.duan
- * @date : 	 2016/9/20
- * @desc : 请求和返回处理器
+ * Author: neo.duan
+ * Date: 2017/02/20 10:41
+ * Desc: 请求和返回处理器
  */
-public class BaseHttpHandler<T> implements Callback<BaseResponse> {
-    private static final String TAG = "BaseHttpHandler";
-    private BaseRequest mRequest;
+public class BaseHttpHandler<T> implements Callback<IBaseResponse> {
+    private static final String TAG = BaseHttpHandler.class.getSimpleName();
+    private IBaseRequest mRequest;
     private IHttpListener mListener;
     private int mTag;
-    public BaseHttpHandler(BaseRequest request, IHttpListener listener, int tag) {
+
+    public BaseHttpHandler(IBaseRequest request, IHttpListener listener, int tag) {
         this.mRequest = request;
         this.mListener = listener;
         this.mTag = tag;
@@ -42,9 +37,9 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
      * 请求前
      */
     public void onStart() {
-        LogUtils.d(TAG,"BaseHttpHandler  onRequest---->" + getRequest().getApi());
+        LogUtils.d(TAG, "BaseHttpHandler  onRequest---->" + getRequest().getApi());
         Map<String, Object> params = mRequest.getParams();
-        LogUtils.d(TAG,params);
+        LogUtils.d(TAG, params);
         if (mListener != null) {
             mListener.onResponse(BaseHttpResponseListener.RESPONSE_START, mRequest, mTag);
         }
@@ -52,7 +47,7 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
 
 
     @Override
-    public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
+    public void onResponse(Call<IBaseResponse> call, Response<IBaseResponse> response) {
         String detailErrorMsg;
 
         //第一关
@@ -66,7 +61,7 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
         }
 
         //第二关
-        BaseResponse resp = response.body();
+        IBaseResponse resp = response.body();
         if (resp == null) {
             if (mListener != null) {
                 detailErrorMsg = BuildConfig.LOG_DEBUG ? "  服务器返回空" : "";
@@ -76,69 +71,20 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
             return;
         }
 
-        LogUtils.d(TAG,"BaseHttpHandler  onResponse---->" + response.body().toString());
-        //TODO 目前不过第三关，正式打开
-        //第三关:Nonce是否为request中Nonce
-//        if (!mRequest.getNonce().equals(resp.getNonce())) {
+        LogUtils.d(TAG, "BaseHttpHandler  onResponse---->" + response.body().toString());
+
+        //第四关：Result是否为成功
+//        if (!resp.isSuccess()) {
 //            if (mListener != null) {
-//                detailErrorMsg = BuildConfig.LOG_DEBUG ? "  Nonce不匹配" : "";
-//                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL,
-//                        "服务器开了点小差，请稍后再试" + detailErrorMsg, mTag);
+//                String msg = "服务器开了点小差，请稍后再试";
+//                String errorMessage = resp.getErrorMessage();
+//                if (!TextUtils.isEmpty(errorMessage)) {
+//                    msg = errorMessage;
+//                }
+//                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, msg, mTag);
 //            }
 //            return;
 //        }
-
-        //第四关：Result是否为成功
-        if (!resp.isSuccess()) {
-            if (mListener != null) {
-                String msg = "服务器开了点小差，请稍后再试";
-                String errorMessage = resp.getErrorMessage();
-                if (!TextUtils.isEmpty(errorMessage)) {
-                    msg = errorMessage;
-                }
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, msg, mTag);
-            }
-            return;
-        }
-
-        //第五关：ResponseData是否为空:如果为空，分发message
-        Object obj = resp.getData();
-        if (obj == null) {
-            if (mListener != null) {
-//                detailErrorMsg = BuildConfig.LOG_DEBUG ? "  ResponseData为空" : "";
-//                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL,
-//                        "请求失败，请重试" + detailErrorMsg, mTag);
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_SUCCESS, resp.getMessage(), mTag);
-            }
-            return;
-        }
-
-        //第六关：序列化的BaseIfo是否为空
-        String responseData = obj.toString();
-        //解密该数据
-        try {
-            responseData = DESUtils.decrypt(Constants.WEIYI_KEY, responseData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        LogUtils.d(TAG,"DES decrypt:" + responseData);
-
-        BaseInfo baseInfo = JSON.parseObject(responseData, mRequest.getResponseClazz());
-        if (baseInfo == null) {
-            if (mListener != null) {
-                detailErrorMsg = BuildConfig.LOG_DEBUG ? "  BaseInfo序列化为空" : "";
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL,
-                        "请求失败，请重试" + detailErrorMsg, mTag);
-            }
-            return;
-        }
-
-
-        //过关：回调成功
-        if (mListener != null) {
-            mListener.onResponse(BaseHttpResponseListener.RESPONSE_SUCCESS, baseInfo, mTag);
-        }
     }
 
     /**
@@ -152,7 +98,7 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
     }
 
     @Override
-    public void onFailure(Call<BaseResponse> call, Throwable t) {
+    public void onFailure(Call<IBaseResponse> call, Throwable t) {
         if (t == null) {
             if (mListener != null) {
                 mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
@@ -182,7 +128,7 @@ public class BaseHttpHandler<T> implements Callback<BaseResponse> {
         }
     }
 
-    public BaseRequest getRequest() {
+    public IBaseRequest getRequest() {
         return mRequest;
     }
 }

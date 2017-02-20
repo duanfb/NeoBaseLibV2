@@ -6,9 +6,9 @@ import com.neo.duan.utils.LogUtils;
 import java.lang.ref.WeakReference;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/9/7 0007
- * @desc : 使用静态内部类，防止持有外部类引用
+ * Author: neo.duan
+ * Date: 2017/02/20 10:41
+ * Desc: 使用静态内部类，防止持有外部类引用
  */
 public class HttpResponseListener extends BaseHttpResponseListener {
     private WeakReference<IBaseView> reference;

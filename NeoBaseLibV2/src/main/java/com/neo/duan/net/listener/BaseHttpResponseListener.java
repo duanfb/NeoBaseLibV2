@@ -3,9 +3,9 @@ package com.neo.duan.net.listener;
 
 
 /**
- * 网络请求回调
- * @author neo.duan
- *
+ * Author: neo.duan
+ * Date: 2017/02/20 17:06
+ * Desc: 网络请求回调
  */
 public abstract class BaseHttpResponseListener implements IHttpListener {
     protected final String TAG = getClass().getSimpleName();

@@ -1,6 +1,6 @@
 package com.neo.duan.net.http;
 
-import com.neo.duan.net.request.base.BaseRequest;
+import com.neo.duan.net.request.IBaseRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +21,7 @@ public class CallCache {
         Collections.synchronizedList(callCache);
     }
 
-    public void add(BaseRequest request, Call call) {
+    public void add(IBaseRequest request, Call call) {
         CallInfo info = new CallInfo();
         info.key = request.getApi();
         info.call = call;
@@ -34,7 +34,7 @@ public class CallCache {
      * @param request
      * @return
      */
-    public Call get(BaseRequest request) {
+    public Call get(IBaseRequest request) {
         if (request == null) {
             return null;
         }
@@ -78,7 +78,7 @@ public class CallCache {
      * @param request
      * @return
      */
-    public boolean contails(BaseRequest request) {
+    public boolean contails(IBaseRequest request) {
         if (request == null) {
             return false;
         }
@@ -96,7 +96,7 @@ public class CallCache {
      * @param request
      * @return
      */
-    public void remove(BaseRequest request) {
+    public void remove(IBaseRequest request) {
         if (request == null) {
             return;
         }

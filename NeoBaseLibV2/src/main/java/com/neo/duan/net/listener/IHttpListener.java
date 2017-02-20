@@ -1,9 +1,9 @@
 package com.neo.duan.net.listener;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/2/29
- * @desc : http请求监听器基类
+ * Author: neo.duan
+ * Date: 2017/02/20 10:41
+ * Desc: http请求监听器基类
  */
 public interface IHttpListener {
     /**

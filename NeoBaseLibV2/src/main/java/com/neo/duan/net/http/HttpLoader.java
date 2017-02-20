@@ -2,31 +2,28 @@ package com.neo.duan.net.http;
 
 
 import com.neo.duan.AppBaseApplication;
+import com.neo.duan.net.HttpLoaderConfiguration;
 import com.neo.duan.net.handler.BaseHttpHandler;
-import com.neo.duan.net.request.ProgressRequestBody;
-import com.neo.duan.net.request.base.BaseRequest;
-import com.neo.duan.net.request.base.FileUploadReq;
-import com.neo.duan.net.response.BaseResponse;
+import com.neo.duan.net.request.IBaseRequest;
+import com.neo.duan.net.response.IBaseResponse;
+import com.neo.duan.utils.LogUtils;
 import com.neo.duan.utils.NetWorkUtils;
 import com.neo.duan.utils.StringUtils;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/7/26 0026
- * @desc : 请描述该文件
+ * Author: neo.duan
+ * Date: 2017/02/20
+ * Desc: 公共请求类
  */
 public class HttpLoader extends BaseHttpLoader {
     private static final int MAX_CALL_COUNT = 8; //最大请求数
+    private HttpLoaderConfiguration configuration;
     private CallCache mCallCache;
 
     private static class HttpLoaderHolder {
@@ -38,8 +35,22 @@ public class HttpLoader extends BaseHttpLoader {
         mCallCache = new CallCache();
     }
 
-    public static final HttpLoader getInstance() {
+    public static HttpLoader getInstance() {
         return HttpLoaderHolder.instance;
+    }
+
+    public void init(HttpLoaderConfiguration configuration) {
+        if(configuration == null) {
+            throw new IllegalArgumentException("ImageLoader configuration can not be initialized with null");
+        } else {
+            if(this.configuration == null) {
+                LogUtils.d(TAG, "Initialize HttpLoader with configuration");
+                this.configuration = configuration;
+            } else {
+                LogUtils.w(TAG, "Try to initialize HttpLoader which had already been " +
+                        "initialized before.");
+            }
+        }
     }
 
     /**
@@ -59,7 +70,7 @@ public class HttpLoader extends BaseHttpLoader {
             return;
         }
 
-        BaseRequest request = handler.getRequest();
+        IBaseRequest request = handler.getRequest();
 
         //校验请求缓存中是否有该请求，有则取消
 //        Call oldCall = mCallCache.get(request);
@@ -71,7 +82,7 @@ public class HttpLoader extends BaseHttpLoader {
 
         Map<String, Object> params = request.getParams();
 
-        Call<BaseResponse> newCall = mApiService.sendPost(params, request.getApi());
+        Call<IBaseResponse> newCall = mApiService.sendPost(params, request.getApi());
 
         //处理回调
         newCall.enqueue(handler);
@@ -90,57 +101,15 @@ public class HttpLoader extends BaseHttpLoader {
 //        }
     }
 
-    /**
-     * 上传文件 https://futurestud.io/tutorials/retrofit-2-how-to-upload-files-to-server
-     *
-     * @param handler
-     */
-    public void upload(BaseHttpHandler handler, ProgressRequestBody.UploadCallbacks callbacks) {
-        checkHandler(handler);
-        //通过校验，调用请求开始
-        handler.onStart();
 
-        //校验网络是否正常
-        if (!NetWorkUtils.isAvailable(AppBaseApplication.getInstance())) {
-            handler.onNetWorkErrorResponse();
-            //TODO 根据产品需求要不要获取缓存数据
-            return;
-        }
-
-        FileUploadReq request = (FileUploadReq) handler.getRequest();
-
-        Map<String, RequestBody> paramMap = new HashMap<>();
-        //请求添加参数
-        Iterator iterator = request.getParams().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            paramMap.put(entry.getKey().toString(), toRequestBody(entry.getValue().toString()));
-        }
-
-
-        //以下构造上传文件的请求参数体
-        File file = new File(request.getFilePath());
-
-        ProgressRequestBody fileBody = new ProgressRequestBody(file, callbacks);
-
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body = MultipartBody.Part.createFormData("multipart/form-data", file.getName(), fileBody);
-
-        //将请求参数和请求体发送执行
-        Call<BaseResponse> newCall = mApiService.upload(paramMap, body, request.getApi());
-
-        //处理回调
-        newCall.enqueue(handler);
-    }
-
-    public void checkHandler(BaseHttpHandler handler) {
+    private void checkHandler(BaseHttpHandler handler) {
         //校验handler处理对象是否为空，抛异常，调用者处理
         if (handler == null) {
             throw new IllegalArgumentException("http handler object is null");
         }
 
         //校验请求对象是否为空
-        BaseRequest request = handler.getRequest();
+        IBaseRequest request = handler.getRequest();
         if (request == null) {
             throw new IllegalArgumentException("http handler the request object is null");
         }
@@ -157,7 +126,7 @@ public class HttpLoader extends BaseHttpLoader {
      *
      * @param req
      */
-    public void cancel(BaseRequest req) {
+    public void cancel(IBaseRequest req) {
         //取消缓存中请求
         Call call = mCallCache.get(req);
         if (call != null && !call.isCanceled()) {

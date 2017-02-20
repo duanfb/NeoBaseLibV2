@@ -2,9 +2,9 @@ package com.neo.duan.net.http;
 
 
 import com.neo.duan.AppBaseApplication;
-import com.neo.duan.net.response.BaseResponse;
+import com.neo.duan.net.HttpLoaderConfiguration;
+import com.neo.duan.net.response.IBaseResponse;
 import com.neo.duan.utils.NetWorkUtils;
-import com.neo.duan.utils.constants.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,33 +32,39 @@ import retrofit2.http.PartMap;
 import retrofit2.http.Url;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/7/25 0025
- * @desc : 公共请求基类  see:http://wuxiaolong.me/2016/06/18/retrofits/
+ * Author: neo.duan
+ * Date: 2017/02/20
+ * Desc: 公共请求基类  see:http://wuxiaolong.me/2016/06/18/retrofits/
  */
 public class BaseHttpLoader {
     protected static final String TAG = BaseHttpLoader.class.getSimpleName();
     protected ApiService mApiService;
 
     protected BaseHttpLoader() {
-        init();
+        init(HttpLoaderConfiguration.createDefault());
+    }
+
+    protected BaseHttpLoader(HttpLoaderConfiguration configuration) {
+        init(configuration);
     }
 
     protected static Retrofit mRetrofit;
 
-    private void init() {
+    private void init(HttpLoaderConfiguration configuration) {
         if (mRetrofit == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             OkHttpClient okHttpClient = builder.build();
             mRetrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.SERVER_HOST) //配置服务器地址
+                    .baseUrl(configuration.serverHost) //配置服务器地址
                     .addConverterFactory(FastJsonConverterFactory.create()) //配置FastJson解析器
-//                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//rxJava适配器，我们不用
                     .client(okHttpClient)
                     .build();
 
-            builder.cache(getCache())//设置缓存目录
-                    .addInterceptor(getCacheInterceptor());//添加缓存机制
+            //是否开启数据缓存
+            if (configuration.enableCache) {
+                builder.cache(getCache(configuration))//设置缓存目录
+                        .addInterceptor(getCacheInterceptor(configuration));//添加缓存机制
+            }
 
             //设置头
             builder.addInterceptor(createHeaderInterceptor());
@@ -76,10 +82,10 @@ public class BaseHttpLoader {
     /**
      * 设置缓存信息
      *
-     * @return
+     * @return Cache
      */
-    private Cache getCache() {
-        File cacheFile = new File(AppBaseApplication.getInstance().getExternalCacheDir(), "YggCache");
+    private Cache getCache(HttpLoaderConfiguration configuration) {
+        File cacheFile = new File(AppBaseApplication.getInstance().getExternalCacheDir(), configuration.cacheDir);
         //设置最大缓存size
         return new Cache(cacheFile, 1024 * 1024 * 50);
     }
@@ -87,7 +93,7 @@ public class BaseHttpLoader {
     /**
      * 获取缓存拦截器，定义一些规则
      */
-    private Interceptor getCacheInterceptor() {
+    private Interceptor getCacheInterceptor(final HttpLoaderConfiguration configuration) {
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
@@ -107,7 +113,7 @@ public class BaseHttpLoader {
                             .build();
                 } else {
                     // 无网络时，设置超时为4周
-                    int maxStale = 60 * 60 * 24 * 28;
+                    long maxStale = configuration.cacheTime;
                     response.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                             .removeHeader("nyn")
@@ -118,28 +124,10 @@ public class BaseHttpLoader {
         };
     }
 
-//    public void set() {
-//        //公共参数
-//        Interceptor addQueryParameterInterceptor = new Interceptor() {
-//            @Override
-//            public Response intercept(Chain chain) throws IOException {
-//                Request originalRequest = chain.request();
-//                Request request;
-//                String method = originalRequest.method();
-//                Headers headers = originalRequest.headers();
-//                HttpUrl modifiedUrl = originalRequest.url().newBuilder()
-//                        // Provide your custom parameter here
-//                        .addQueryParameter("platform", "android")
-//                        .addQueryParameter("version", "1.0.0")
-//                        .build();
-//                request = originalRequest.newBuilder().url(modifiedUrl).build();
-//                return chain.proceed(request);
-//            }
-//        };
-//        //公共参数
-//        builder.addInterceptor(addQueryParameterInterceptor);
-//    }
-
+    /**
+     * 添加头部拦截器
+     * @return Interceptor
+     */
     private Interceptor createHeaderInterceptor() {
         return new Interceptor() {
             @Override
@@ -166,31 +154,31 @@ public class BaseHttpLoader {
         /**
          * 通用post请求
          *
-         * @param paramMap
-         * @param url
-         * @return
+         * @param paramMap 参数Map
+         * @param url url
+         * @return Call
          */
         @FormUrlEncoded
         @POST
-        Call<BaseResponse> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
+        Call<IBaseResponse> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
 
         /**
          * 通用get请求，自己拼接带参数的请求地址
          *
-         * @param url
-         * @return
+         * @param url url
+         * @return Call
          */
         @GET
-        Call<BaseResponse> sendGet(@Url String url);
+        Call<IBaseResponse> sendGet(@Url String url);
 
         /**
          * 通用上传请求
          *
-         * @return
+         * @return Call
          */
         @Multipart
         @POST
-        Call<BaseResponse> upload(@PartMap Map<String, RequestBody> params,
+        Call<IBaseResponse> upload(@PartMap Map<String, RequestBody> params,
                                   @Part MultipartBody.Part file, @Url String url);
     }
 }

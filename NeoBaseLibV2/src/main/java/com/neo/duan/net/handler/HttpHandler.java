@@ -2,15 +2,15 @@ package com.neo.duan.net.handler;
 
 
 import com.neo.duan.net.listener.IHttpListener;
-import com.neo.duan.net.request.base.BaseRequest;
+import com.neo.duan.net.request.IBaseRequest;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/7/26 0026
- * @desc : 公共http分发器
+ * Author: neo.duan
+ * Date: 2017/02/20 10:41
+ * Desc: 公共http分发器
  */
 public class HttpHandler<T> extends BaseHttpHandler<T> {
-    public HttpHandler(BaseRequest request, IHttpListener listener,
+    public HttpHandler(IBaseRequest request, IHttpListener listener,
                        int tag) {
         super(request, listener, tag);
     }
