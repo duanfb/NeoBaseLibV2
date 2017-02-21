@@ -13,9 +13,9 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 
 /**
- * @author : neo.duan
- * @date : 	 2016/11/10 0010
- * @desc : 请描述该文件
+ * Author: neo.duan
+ * Date: 2017/02/21
+ * Desc: 再次封装下拉刷新
  */
 public class XRefreshLayout extends PtrClassicFrameLayout {
 

@@ -2,6 +2,7 @@ package com.neo.duan.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -78,9 +79,9 @@ public class MainNavTabBarView extends LinearLayout {
 
         // 获取文本颜色
         mTextColorOn = a.getColor(R.styleable.TabBar_textColorOn,
-                getResources().getColor(R.color.common_black));
+                ContextCompat.getColor(context, R.color.common_black));
         mTextColorOff = a.getColor(R.styleable.TabBar_textColorOff,
-                getResources().getColor(R.color.common_black));
+                ContextCompat.getColor(context, R.color.common_black));
 
         // 获取自定义属性资源ID
         int textArrResId = a.getResourceId(R.styleable.TabBar_defaultText,
@@ -97,11 +98,6 @@ public class MainNavTabBarView extends LinearLayout {
         mSelectedArr = getResources().obtainTypedArray(selectedArrResId);
         mUnSelectedArr = getResources().obtainTypedArray(unSelectedArrResId);
 
-        // 获取背景色
-        int mItemBgColorOn = a.getColor(R.styleable.TabBar_bgColorOn,
-                getResources().getColor(R.color.common_black));
-        int mItemBgColorOff = a.getColor(R.styleable.TabBar_bgColorOn,
-                getResources().getColor(R.color.common_black));
         a.recycle();
     }
 
@@ -168,8 +164,8 @@ public class MainNavTabBarView extends LinearLayout {
     /**
      * 初始化item上数据显示
      *
-     * @param itemView
-     * @param position
+     * @param itemView itemView
+     * @param position position
      */
     private void initItemData(View itemView, int position) {
         ImageView ivImg = (ImageView) itemView
@@ -188,7 +184,7 @@ public class MainNavTabBarView extends LinearLayout {
     /**
      * 设置item是否选中
      *
-     * @param position
+     * @param position position
      */
     public void setItemSelected(int position) {
         this.mCurrentPosition = position; // 标记当前选中
@@ -209,7 +205,7 @@ public class MainNavTabBarView extends LinearLayout {
     /**
      * 设置某个位置item选中
      *
-     * @param position
+     * @param position position
      */
     private void setItemSelectedState(int position) {
         View itemView = mItemViewList.get(position);
@@ -227,7 +223,7 @@ public class MainNavTabBarView extends LinearLayout {
     /**
      * 设置某个位置item不选中
      *
-     * @param position
+     * @param position position
      */
     private void setItemUnSelectedState(int position) {
         View itemView = mItemViewList.get(position);
@@ -245,8 +241,9 @@ public class MainNavTabBarView extends LinearLayout {
 
     /**
      * 设置小红点是否显示
+     *
      * @param position 显示小红点位置
-     * @param count 数量
+     * @param count    数量
      */
     public void setRedDotDisplay(int position, int count) {
         if (position > mItemViewList.size() - 1) {
@@ -272,8 +269,8 @@ public class MainNavTabBarView extends LinearLayout {
         return mCurrentPosition;
     }
 
-    public void setCurrentPosition(int mCurrentPosition) {
-        this.mCurrentPosition = mCurrentPosition;
+    public void setCurrentPosition(int position) {
+        this.mCurrentPosition = position;
     }
 
     /**
