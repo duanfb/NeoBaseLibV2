@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--状态栏相关颜色-->
+    <color name="colorPrimary">@color/common_blue</color>
+    <color name="colorPrimaryDark">@color/common_blue</color>
+    <color name="colorAccent">@color/common_blue</color>
+
+    <!--Toast相关颜色-->
+    <color name="alert">@color/common_blue</color>
+    <color name="confirm">@color/common_blue</color>
+    <color name="info">@color/common_blue</color>
+
+    <!--公共色-->
+    <color name="common_blue">#1a92ed</color>
+    <color name="common_blue_pressed">#0e98cb</color>
+    <color name="common_transparent">@android:color/transparent</color>
+    <color name="common_white">@android:color/white</color>
+    <color name="common_black">@android:color/black</color>
+    <color name="common_gray">#999999</color>
+    <color name="common_gray_line">#e9e9e9</color>
+    <color name="common_bg">#ebecf0</color>
+    <color name="common_red">#e64340</color>
+    <color name="common_red_pressed">#e64340</color>
+
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--首页底部导航默认名称-->
+    <string-array name="main_tab_default_name">
+        <item>导航1</item>
+        <item>导航2</item>
+        <item>导航3</item>
+    </string-array>
+    <!--首页底部导航默认选中图片-->
+    <integer-array name="main_tab_default_selected">
+        <item>@drawable/ic_selected_message</item>
+        <item>@drawable/ic_selected_find</item>
+        <item>@drawable/ic_selected_business</item>
+    </integer-array>
+
+    <!--首页底部导航默认未选中图片-->
+    <integer-array name="main_tab_default_unselected">
+        <item>@drawable/ic_unselected_message</item>
+        <item>@drawable/ic_unselected_find</item>
+        <item>@drawable/ic_unselected_business</item>
+    </integer-array>
+</resources>

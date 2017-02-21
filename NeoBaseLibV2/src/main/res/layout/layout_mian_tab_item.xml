@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_common_btn"
+    android:gravity="center_vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_main_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp">
+
+        <ImageView
+            android:id="@+id/iv_tab_item_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="visible"
+            tools:background="@drawable/ic_launcher" />
+
+        <com.neo.duan.ui.widget.app.XTextView
+            android:id="@+id/ctv_tab_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_tab_item_img"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            tools:text="送红包" />
+
+    </RelativeLayout>
+
+    <com.neo.duan.ui.widget.app.XTextView
+        android:id="@+id/tv_red_point"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:minWidth="16dp"
+        android:layout_marginLeft="-10dp"
+        android:layout_toRightOf="@id/rl_main_tab"
+        android:background="@drawable/bg_small_red_circle"
+        android:gravity="center"
+        android:text="9+"
+        android:textColor="@color/common_white"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+</RelativeLayout>

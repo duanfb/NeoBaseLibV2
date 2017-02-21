@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--底部tabBar自定义属性-->
+    <declare-styleable name="ClickItem">
+        <!--左边图片-->
+        <attr name="leftIcon" format="reference" />
+        <!--左边文本-->
+        <attr name="leftText" format="string" />
+        <!--左边文本字体大小-->
+        <attr name="leftTextSize" format="dimension" />
+        <!--右边文本-->
+        <attr name="rightText" format="string" />
+        <!--右边文本字体大小-->
+        <attr name="rightTextSize" format="dimension" />
+        <!--右边图标-->
+        <attr name="rightIcon" format="reference" />
+        <!-- 左边文本颜色 -->
+        <attr name="leftTextColor" format="color" />
+        <!-- 右边文本颜色 -->
+        <attr name="rightTextColor" format="color" />
+
+    </declare-styleable>
+
+
+    <!--配置ClickItem属性-->
+    <declare-styleable name="TabBar">
+        <attr name="textColorOn" format="color" />
+        <!--图标下面文字颜色-->
+        <attr name="textColorOff" format="color" />
+        <!--图标下面文字颜色-->
+        <attr name="defaultText" format="reference" />
+        <!--默认文本数组-->
+        <attr name="defaultIconSelected" format="reference" />
+        <!--默认图标数组-->
+        <attr name="defaultIconUnSelected" format="reference" />
+        <!--默认图标数组-->
+        <attr name="bgColorOn" format="color" />
+        <!--item选中背景颜色-->
+        <attr name="bgColorOff" format="color" />
+        <!--item未选中背景颜色-->
+    </declare-styleable>
+
+    <!--滑动菜单-->
+    <declare-styleable name="SwipeMenu">
+        <attr name="sml_scroller_duration" format="integer" />
+        <attr name="sml_auto_open_percent" format="float" />
+        <attr name="sml_scroller_interpolator" format="reference" />
+    </declare-styleable>
+</resources>
