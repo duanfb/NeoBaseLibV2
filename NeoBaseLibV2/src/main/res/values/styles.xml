@@ -1,4 +1,10 @@
 <resources>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <!--底部弹出对话框style-->
     <style name="MyDialogStyleBottom">
         <item name="android:windowAnimationStyle">@style/AnimBottom</item>
