@@ -33,7 +33,7 @@ public final class HttpLoaderConfiguration {
         long cacheTime; //缓存时长
 
         public Builder() {
-            this.serverHost = "";
+            this.serverHost = "http://www.baidu.com/abc/";
             this.enableCache = true;
             this.cacheDir = "appCache";
             this.cacheTime = 60 * 60 * 24 * 28; //默认4周
