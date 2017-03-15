@@ -207,9 +207,9 @@ public class CommonTitleBarView extends LinearLayout {
     public void enableTitle(boolean enabled, String title) {
         if (enabled) {
             title = ((title == null || "null".equals(title)) ? "" : title);
-            if (title.length() > 6) {
-                title = title.substring(0, 6) + "...";
-            }
+//            if (title.length() > 6) {
+//                title = title.substring(0, 6) + "...";
+//            }
             TextView tvTitle = (TextView) View.inflate(mContext, R.layout.layout_top_bar_nav_title_tv, null);
             tvTitle.setText(title);
             mFlTitleContainer.removeAllViews();
