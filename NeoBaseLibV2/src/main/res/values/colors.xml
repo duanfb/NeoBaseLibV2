@@ -23,7 +23,7 @@
     <color name="common_red">#e64340</color>
     <color name="common_red_pressed">#e64340</color>
 
-    <color name="line">#1a92ed</color>
+    <color name="line">#e0e0e0</color>
     <color name="ripple_background">#f0f0f0</color>
 
 </resources>
