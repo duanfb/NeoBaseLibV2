@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_click_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selector_common_btn"
     android:gravity="center_vertical"
-    android:minHeight="48dp"
+    android:minHeight="43dp"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/dp_10"
-    android:paddingLeft="@dimen/dp_16"
-    android:paddingRight="@dimen/dp_10"
-    android:paddingTop="@dimen/dp_10">
+    android:paddingLeft="14dp"
+    android:paddingRight="10dp"
+    android:background="@drawable/selector_ripple_border">
 
     <ImageView
         android:id="@+id/iv_item_view_left"
@@ -18,19 +17,23 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
         android:src="@drawable/ic_launcher"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_item_view_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="性别"
-        android:textColor="@color/common_black" />
+        android:textColor="#33383b"
+        android:textSize="14sp"
+        tools:text="性别" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <RelativeLayout
+        android:id="@+id/rl_item_view_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
         android:layout_weight="1" />
 
     <TextView
@@ -40,14 +43,24 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:text="男"
-        android:textColor="@color/common_gray" />
+        android:textColor="#9d9d9d"
+        android:textSize="13sp"
+        tools:text="男" />
+
+    <View
+        android:id="@+id/view_item_view_red_point"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_click_item_red_point"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/iv_item_view_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginLeft="14dp"
         android:src="@drawable/ic_common_arrow" />
 
 </LinearLayout>

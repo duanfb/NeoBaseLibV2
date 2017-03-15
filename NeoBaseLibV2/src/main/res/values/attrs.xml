@@ -25,20 +25,23 @@
         <!--左边图片-->
         <attr name="leftIcon" format="reference" />
         <!--左边文本-->
-        <attr name="leftText" format="string" />
-        <!--左边文本字体大小-->
-        <attr name="leftTextSize" format="dimension" />
+        <attr name="leftText" format="reference|string" />
         <!--右边文本-->
-        <attr name="rightText" format="string" />
-        <!--右边文本字体大小-->
-        <attr name="rightTextSize" format="dimension" />
+        <attr name="rightText" format="reference|string" />
         <!--右边图标-->
         <attr name="rightIcon" format="reference" />
         <!-- 左边文本颜色 -->
         <attr name="leftTextColor" format="color" />
         <!-- 右边文本颜色 -->
         <attr name="rightTextColor" format="color" />
-
+        <!--左边文本字体大小-->
+        <attr name="leftTextSize" format="dimension" />
+        <!--右边文本字体大小-->
+        <attr name="rightTextSize" format="dimension" />
+        <!-- 顶部line -->
+        <attr name="topLine" format="boolean" />
+        <!-- 底部line -->
+        <attr name="bottomLine" format="boolean" />
     </declare-styleable>
 
     <!--滑动菜单-->
