@@ -3,7 +3,7 @@ package com.neo.duan.net.http;
 
 import com.neo.duan.AppBaseApplication;
 import com.neo.duan.net.HttpLoaderConfiguration;
-import com.neo.duan.net.response.IBaseResponse;
+import com.neo.duan.net.response.ServerResponse;
 import com.neo.duan.utils.NetWorkUtils;
 
 import java.io.File;
@@ -41,16 +41,12 @@ public class BaseHttpLoader {
     protected ApiService mApiService;
 
     protected BaseHttpLoader() {
-        init(HttpLoaderConfiguration.createDefault());
-    }
 
-    protected BaseHttpLoader(HttpLoaderConfiguration configuration) {
-        init(configuration);
     }
 
     protected static Retrofit mRetrofit;
 
-    private void init(HttpLoaderConfiguration configuration) {
+    protected void initBase(HttpLoaderConfiguration configuration) {
         if (mRetrofit == null) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             OkHttpClient okHttpClient = builder.build();
@@ -160,7 +156,7 @@ public class BaseHttpLoader {
          */
         @FormUrlEncoded
         @POST
-        Call<IBaseResponse> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
+        Call<ServerResponse> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
 
         /**
          * 通用get请求，自己拼接带参数的请求地址
@@ -169,7 +165,7 @@ public class BaseHttpLoader {
          * @return Call
          */
         @GET
-        Call<IBaseResponse> sendGet(@Url String url);
+        Call<ServerResponse> sendGet(@Url String url);
 
         /**
          * 通用上传请求
@@ -178,7 +174,7 @@ public class BaseHttpLoader {
          */
         @Multipart
         @POST
-        Call<IBaseResponse> upload(@PartMap Map<String, RequestBody> params,
+        Call<ServerResponse> upload(@PartMap Map<String, RequestBody> params,
                                   @Part MultipartBody.Part file, @Url String url);
     }
 }

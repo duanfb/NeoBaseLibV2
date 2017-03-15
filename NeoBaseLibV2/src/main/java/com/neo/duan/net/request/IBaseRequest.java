@@ -29,4 +29,5 @@ public interface IBaseRequest {
      * @return Class
      */
     Class getResponseClazz();
+
 }

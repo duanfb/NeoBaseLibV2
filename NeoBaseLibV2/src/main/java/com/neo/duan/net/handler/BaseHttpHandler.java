@@ -1,10 +1,14 @@
 package com.neo.duan.net.handler;
 
+import android.text.TextUtils;
+
 import com.neo.duan.BuildConfig;
 import com.neo.duan.net.listener.BaseHttpResponseListener;
 import com.neo.duan.net.listener.IHttpListener;
 import com.neo.duan.net.request.IBaseRequest;
-import com.neo.duan.net.response.IBaseResponse;
+import com.neo.duan.net.response.BaseResponse;
+import com.neo.duan.net.response.ServerResponse;
+import com.neo.duan.utils.JSONUtils;
 import com.neo.duan.utils.LogUtils;
 
 import java.io.IOException;
@@ -21,7 +25,7 @@ import retrofit2.Response;
  * Date: 2017/02/20 10:41
  * Desc: 请求和返回处理器
  */
-public class BaseHttpHandler<T> implements Callback<IBaseResponse> {
+public class BaseHttpHandler<T> implements Callback<ServerResponse> {
     private static final String TAG = BaseHttpHandler.class.getSimpleName();
     private IBaseRequest mRequest;
     private IHttpListener mListener;
@@ -47,44 +51,72 @@ public class BaseHttpHandler<T> implements Callback<IBaseResponse> {
 
 
     @Override
-    public void onResponse(Call<IBaseResponse> call, Response<IBaseResponse> response) {
-        String detailErrorMsg;
-
-        //第一关
+    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+        //第一关卡
         if (response == null) {
             if (mListener != null) {
-                detailErrorMsg = BuildConfig.LOG_DEBUG ? "  服务器返回空" : "";
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL,
-                        "请求失败，请重试" + detailErrorMsg, mTag);
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
             }
             return;
         }
 
-        //第二关
-        IBaseResponse resp = response.body();
+        //第二关卡
+        ServerResponse serverResp = response.body();
+        if (serverResp == null) {
+            if (mListener != null) {
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
+            }
+            return;
+        }
+
+        //第三关卡
+        LogUtils.d(TAG, "BaseHttpHandler  onResponse---->" + serverResp.toString());
+        if (!serverResp.isSuccess()) {
+
+            if (mListener != null) {
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
+            }
+            return;
+        }
+
+        //第四关卡
+        String serverRespParams = serverResp.getParams();
+        if (TextUtils.isEmpty(serverRespParams)) {
+            if (mListener != null) {
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
+            }
+            return;
+        }
+
+        //第五关卡:先用BaseResponse封装，判断是否成功
+        BaseResponse resp = JSONUtils.parseObject(serverRespParams, BaseResponse.class);
         if (resp == null) {
             if (mListener != null) {
-                detailErrorMsg = BuildConfig.LOG_DEBUG ? "  服务器返回空" : "";
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL,
-                        "请求失败，请重试" + detailErrorMsg, mTag);
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
             }
             return;
         }
 
-        LogUtils.d(TAG, "BaseHttpHandler  onResponse---->" + response.body().toString());
+        //第六关卡
+        if (!resp.isSuccess()) {
+            if (mListener != null) {
+                String msg = "服务器开了点小差，请稍后再试";
+                String errorMessage = resp.getErrorMessage();
+                if (!TextUtils.isEmpty(errorMessage)) {
+                    msg = errorMessage;
+                }
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, msg, mTag);
+            }
+            return;
+        }
 
-        //第四关：Result是否为成功
-//        if (!resp.isSuccess()) {
-//            if (mListener != null) {
-//                String msg = "服务器开了点小差，请稍后再试";
-//                String errorMessage = resp.getErrorMessage();
-//                if (!TextUtils.isEmpty(errorMessage)) {
-//                    msg = errorMessage;
-//                }
-//                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, msg, mTag);
-//            }
-//            return;
-//        }
+        //第九关:再将serverRespParams序列化成Model进行分发
+        Object infoResp = JSONUtils.parseObject(serverRespParams, getResponseClazz());
+
+        //过关：回调成功
+        if (mListener != null) {
+            mListener.onResponse(BaseHttpResponseListener.RESPONSE_SUCCESS, infoResp, mTag);
+        }
     }
 
     /**
@@ -98,7 +130,7 @@ public class BaseHttpHandler<T> implements Callback<IBaseResponse> {
     }
 
     @Override
-    public void onFailure(Call<IBaseResponse> call, Throwable t) {
+    public void onFailure(Call<ServerResponse> call, Throwable t) {
         if (t == null) {
             if (mListener != null) {
                 mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
@@ -130,5 +162,9 @@ public class BaseHttpHandler<T> implements Callback<IBaseResponse> {
 
     public IBaseRequest getRequest() {
         return mRequest;
+    }
+
+    public Class<?> getResponseClazz() {
+        return mRequest.getResponseClazz();
     }
 }

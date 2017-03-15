@@ -5,7 +5,7 @@ import com.neo.duan.AppBaseApplication;
 import com.neo.duan.net.HttpLoaderConfiguration;
 import com.neo.duan.net.handler.BaseHttpHandler;
 import com.neo.duan.net.request.IBaseRequest;
-import com.neo.duan.net.response.IBaseResponse;
+import com.neo.duan.net.response.ServerResponse;
 import com.neo.duan.utils.LogUtils;
 import com.neo.duan.utils.NetWorkUtils;
 import com.neo.duan.utils.StringUtils;
@@ -46,6 +46,7 @@ public class HttpLoader extends BaseHttpLoader {
             if(this.configuration == null) {
                 LogUtils.d(TAG, "Initialize HttpLoader with configuration");
                 this.configuration = configuration;
+                super.initBase(configuration);
             } else {
                 LogUtils.w(TAG, "Try to initialize HttpLoader which had already been " +
                         "initialized before.");
@@ -82,7 +83,7 @@ public class HttpLoader extends BaseHttpLoader {
 
         Map<String, Object> params = request.getParams();
 
-        Call<IBaseResponse> newCall = mApiService.sendPost(params, request.getApi());
+        Call<ServerResponse> newCall = mApiService.sendPost(params, request.getApi());
 
         //处理回调
         newCall.enqueue(handler);
