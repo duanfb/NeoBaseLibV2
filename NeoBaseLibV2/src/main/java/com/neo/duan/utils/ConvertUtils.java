@@ -47,4 +47,22 @@ public class ConvertUtils {
         }
         return defaultValue;
     }
+
+    /**
+     * String 转 float
+     * @param value
+     * @param defaultValue
+     * @return
+     */
+    public static float convert2Float(String value, float defaultValue) {
+        if (TextUtils.isEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Float.parseFloat(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return defaultValue;
+    }
 }
