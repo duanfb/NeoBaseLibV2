@@ -66,9 +66,9 @@ public class BaseHttpLoader {
             builder.addInterceptor(createHeaderInterceptor());
 
             //设置超时
-            builder.connectTimeout(20, TimeUnit.SECONDS);
-            builder.readTimeout(20, TimeUnit.SECONDS);
-            builder.writeTimeout(20, TimeUnit.SECONDS);
+            builder.connectTimeout(configuration.timeout, TimeUnit.SECONDS);
+            builder.readTimeout(configuration.timeout, TimeUnit.SECONDS);
+            builder.writeTimeout(configuration.timeout, TimeUnit.SECONDS);
             //错误重连
             builder.retryOnConnectionFailure(true);
         }

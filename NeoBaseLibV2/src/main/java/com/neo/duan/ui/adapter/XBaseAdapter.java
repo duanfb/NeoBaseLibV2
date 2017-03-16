@@ -17,6 +17,10 @@ import java.util.List;
  * Desc: 再次封装BaseViewHolder
  */
 public abstract class XBaseAdapter<T> extends BaseQuickAdapter<T, XBaseViewHolder> {
+    /**
+     * holder.addOnClickListener();需要注意顺序，先add子View的Id，再add父View的id，否则父类会覆盖点击子View事件
+     *
+     */
 
     public XBaseAdapter(Context context) {
         super(null);
