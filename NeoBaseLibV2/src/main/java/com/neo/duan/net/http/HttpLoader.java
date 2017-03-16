@@ -74,12 +74,12 @@ public class HttpLoader extends BaseHttpLoader {
         IBaseRequest request = handler.getRequest();
 
         //校验请求缓存中是否有该请求，有则取消
-//        Call oldCall = mCallCache.get(request);
-//        //去拦截器校验该请求是否需要取消
-//        if (oldCall != null && !UnCancelInterceptor.requests.contains(request.getClass())) {
-//            oldCall.cancel();
-//            mCallCache.remove(request);
-//        }
+        Call oldCall = mCallCache.get(request);
+        //去拦截器校验该请求是否需要取消
+        if (oldCall != null && !UnCancelInterceptor.requests.contains(request.getClass())) {
+            oldCall.cancel();
+            mCallCache.remove(request);
+        }
 
         Map<String, Object> params = request.getParams();
 
@@ -89,17 +89,17 @@ public class HttpLoader extends BaseHttpLoader {
         newCall.enqueue(handler);
 
         //将请求添加到集合中，方便取消请求,缓存中只缓存5个请求,也就说最多允许同时发5个请求
-//        if (mCallCache.size() > MAX_CALL_COUNT) {
-//            LogUtils.e(TAG, "call count size more " + MAX_CALL_COUNT + ", will cancel the index of 0 call");
-//            //取消最后一个请求
-//            Call lastCall = mCallCache.getLast();
-//            if (lastCall != null && !lastCall.isCanceled()) {
-//                lastCall.cancel();
-//                mCallCache.removeLast();
-//            }
-//        } else {
-//            mCallCache.add(request, newCall);
-//        }
+        if (mCallCache.size() > MAX_CALL_COUNT) {
+            LogUtils.e(TAG, "call count size more " + MAX_CALL_COUNT + ", will cancel the index of 0 call");
+            //取消最后一个请求
+            Call lastCall = mCallCache.getLast();
+            if (lastCall != null && !lastCall.isCanceled()) {
+                lastCall.cancel();
+                mCallCache.removeLast();
+            }
+        } else {
+            mCallCache.add(request, newCall);
+        }
     }
 
 

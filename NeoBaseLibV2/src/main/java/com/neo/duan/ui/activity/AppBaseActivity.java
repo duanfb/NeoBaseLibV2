@@ -321,7 +321,7 @@ public abstract class AppBaseActivity<P extends BasePresenter>  extends AppCompa
 
     @Override
     public void showLoading() {
-        showLoading("");
+        showLoading("正在加载...");
     }
 
     @Override
