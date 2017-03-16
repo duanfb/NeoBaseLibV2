@@ -1,6 +1,7 @@
 package com.neo.duan.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * Date: 2017/02/18
  * Desc: 再次封装BaseViewHolder
  */
-public abstract class XBaseAdapter<T> extends BaseQuickAdapter {
+public abstract class XBaseAdapter<T> extends BaseQuickAdapter<T, XBaseViewHolder> {
 
     public XBaseAdapter(Context context) {
         super(null);
@@ -45,17 +46,10 @@ public abstract class XBaseAdapter<T> extends BaseQuickAdapter {
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public XBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.mLayoutResId = getLayoutResId(viewType);
         return super.onCreateViewHolder(parent, viewType);
     }
-
-    @Override
-    protected void convert(BaseViewHolder helper, Object item) {
-        convert((XBaseViewHolder) helper, (T) item);
-    }
-
-    protected abstract void convert(XBaseViewHolder holder, T item);
 
     protected abstract int getLayoutResId(int viewType);
 }
