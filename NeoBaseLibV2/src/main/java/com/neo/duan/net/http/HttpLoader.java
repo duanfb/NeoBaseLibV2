@@ -76,7 +76,7 @@ public class HttpLoader extends BaseHttpLoader {
         //校验请求缓存中是否有该请求，有则取消
         Call oldCall = mCallCache.get(request);
         //去拦截器校验该请求是否需要取消
-        if (oldCall != null && !UnCancelInterceptor.requests.contains(request.getClass())) {
+        if (oldCall != null && !configuration.unCancelReqList.contains(request.getClass())) {
             oldCall.cancel();
             mCallCache.remove(request);
         }

@@ -42,6 +42,26 @@ public class ScreenManager {
     }
 
     /**
+     * 回收堆栈其他Activity除了指定的activity
+     *
+     * @param activity activity
+     */
+    public void popOtherActivity(Activity activity) {
+        try {
+            for (Activity tempActivity : activityStack) {
+                if (tempActivity != null) {
+                    if (tempActivity != activity) {
+                        popActivity(tempActivity);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("ScreenManager:popOtherActivity---->"
+                    + ex.getMessage());
+        }
+    }
+
+    /**
      * 获取堆栈的栈顶activity
      *
      * @return 栈顶activity

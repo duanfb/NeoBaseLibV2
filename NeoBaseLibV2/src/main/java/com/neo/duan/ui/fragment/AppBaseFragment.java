@@ -54,6 +54,10 @@ public abstract class AppBaseFragment<P extends BasePresenter> extends Fragment 
         initBaseView(view);
         initBaseListeners();
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            initBundleData(bundle);
+        }
         /***初始化标题栏****/
         initTop();
         /***初始化内容布局****/
@@ -66,6 +70,13 @@ public abstract class AppBaseFragment<P extends BasePresenter> extends Fragment 
         mPresenter = initPresents();
         /***初始化数据****/
         initData();
+    }
+
+    /**
+     * 初始化Bundle传递的数据
+     */
+    public void initBundleData(Bundle bundle) {
+
     }
 
     /**
