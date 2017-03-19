@@ -67,6 +67,7 @@ public class HttpResponseListener extends BaseHttpResponseListener {
         if (baseView != null) {
             baseView.hideLoading();
             baseView.showNetError();
+            baseView.showErrorMsg("网络连接不畅，请检查一下您的网络！");
         }
     }
 }
