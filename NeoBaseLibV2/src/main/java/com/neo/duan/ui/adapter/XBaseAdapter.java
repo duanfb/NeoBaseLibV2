@@ -1,13 +1,9 @@
 package com.neo.duan.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.neo.duan.R;
 
 import java.util.List;
 
@@ -45,8 +41,8 @@ public abstract class XBaseAdapter<T> extends BaseQuickAdapter<T, XBaseViewHolde
     @Override
     public void loadMoreComplete() {
         super.loadMoreComplete();
-        removeAllFooterView();
-        addFooterView(View.inflate(mContext, R.layout.layout_no_more, null));
+//        removeAllFooterView();
+//        addFooterView(View.inflate(mContext, R.layout.layout_no_more, null));
     }
 
     @Override
