@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,6 +144,14 @@ public abstract class AppBaseActivity<P extends BasePresenter>  extends AppCompa
      */
     public void enableTop(boolean enabled) {
         mLlTop.setVisibility(enabled ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * 设置标题栏颜色
+     * @param resId
+     */
+    public void setTopBarBackgroudColor(int resId) {
+        mLlTop.setBackgroundColor(ContextCompat.getColor(mContext, resId));
     }
 
 
