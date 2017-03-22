@@ -2,13 +2,25 @@
 package com.neo.duan.net.listener;
 
 
+import com.neo.duan.mvp.view.base.IBaseView;
+import com.neo.duan.net.response.BaseResponse;
+import com.neo.duan.utils.LogUtils;
+
+import java.lang.ref.WeakReference;
+
 /**
  * Author: neo.duan
  * Date: 2017/02/20 17:06
- * Desc: 网络请求回调
+ * Desc: 网络请求回调：使用静态内部类，防止持有外部类引用
  */
-public abstract class BaseHttpResponseListener implements IHttpListener {
+public class BaseHttpResponseListener implements IHttpListener {
     protected final String TAG = getClass().getSimpleName();
+
+    private WeakReference<IBaseView> reference;
+
+    public BaseHttpResponseListener(IBaseView baseView) {
+        reference = new WeakReference<>(baseView);
+    }
 
     @Override
     public void onResponse(int code, Object jsonObject, int tag) {
@@ -20,7 +32,15 @@ public abstract class BaseHttpResponseListener implements IHttpListener {
                 onSuccess(jsonObject);
                 break;
             case RESPONSE_FAIL://请求失败：服务器返回错误或者超时，弹出提示
-                onFail(jsonObject == null ? "" : jsonObject.toString());
+                if (jsonObject == null) {
+                    onFail(-999, "服务器开了点小差，请稍后再试");
+                } else {
+                    if (jsonObject instanceof BaseResponse) {
+                        onFail(((BaseResponse) jsonObject).getStatus(), ((BaseResponse) jsonObject).getErrorMessage());
+                    } else {
+                        onFail(-999, jsonObject.toString());
+                    }
+                }
                 break;
             case RESPONSE_CANCEL://请求已取消
                 onCancel(jsonObject == null ? "" : jsonObject.toString());
@@ -34,10 +54,51 @@ public abstract class BaseHttpResponseListener implements IHttpListener {
         }
     }
 
-    public abstract void onStart();
-    public abstract void onSuccess(Object model);
-    public abstract void onFail(String msg);
-    public abstract void onCancel(String msg);
-    public abstract void onDone(String msg);
-    public abstract void onError();
+    public void onStart() {
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.showLoading();
+        }
+    }
+
+    public void onSuccess(Object model) {
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.hideLoading();
+        }
+    }
+
+    public void onFail(int status, String msg) {
+        LogUtils.e(TAG, msg);
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.showErrorMsg(msg);
+            baseView.hideLoading();
+        }
+    }
+
+    public void onCancel(String msg) {
+        LogUtils.e(TAG, msg);
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.hideLoading();
+        }
+    }
+
+    public void onDone(String msg) {
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.showErrorMsg(msg);
+            baseView.hideLoading();
+        }
+    }
+
+    public void onError() {
+        IBaseView baseView = reference.get();
+        if (baseView != null) {
+            baseView.hideLoading();
+            baseView.showNetError();
+            baseView.showErrorMsg("网络连接不畅，请检查一下您的网络！");
+        }
+    }
 }

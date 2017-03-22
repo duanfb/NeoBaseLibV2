@@ -2,7 +2,6 @@ package com.neo.duan.net.handler;
 
 import android.text.TextUtils;
 
-import com.neo.duan.BuildConfig;
 import com.neo.duan.net.listener.BaseHttpResponseListener;
 import com.neo.duan.net.listener.IHttpListener;
 import com.neo.duan.net.request.IBaseRequest;
@@ -72,7 +71,6 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
         //第三关卡
         LogUtils.d(TAG, "BaseHttpHandler  onResponse---->" + serverResp.toString());
         if (!serverResp.isSuccess()) {
-
             if (mListener != null) {
                 mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
             }
@@ -100,12 +98,7 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
         //第六关卡
         if (!resp.isSuccess()) {
             if (mListener != null) {
-                String msg = "服务器开了点小差，请稍后再试";
-                String errorMessage = resp.getErrorMessage();
-                if (!TextUtils.isEmpty(errorMessage)) {
-                    msg = errorMessage;
-                }
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, msg, mTag);
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, resp, mTag);
             }
             return;
         }
