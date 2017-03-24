@@ -121,4 +121,18 @@ public class AppUtils {
     public static String getAppName(Context context) {
         return context.getResources().getString(R.string.app_name);
     }
+
+    /**
+     * 获取app版本号
+     * @param context
+     * @return
+     */
+    public static String getPackageName(Context context) {
+        try {
+            return context.getPackageName();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

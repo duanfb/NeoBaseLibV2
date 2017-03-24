@@ -13,6 +13,7 @@ import com.neo.duan.utils.AppUtils;
 public class AppInfo {
     public String appName; //app名称
     public String versionName; //版本号
+    public String packageName; //包名
     public int versionCode; //代码版本号
     public boolean isInBackground; //是否在后台运行
 
@@ -20,7 +21,9 @@ public class AppInfo {
         AppInfo info = new AppInfo();
         info.appName = AppUtils.getAppName(context);
         info.versionName = AppUtils.getVersionName(context);
+        info.packageName = AppUtils.getPackageName(context);
         info.versionCode = AppUtils.getVersionCode(context);
+        info.isInBackground = AppUtils.isApplicationInBackground(context);
         info.isInBackground = AppUtils.isApplicationInBackground(context);
         return info;
     }
