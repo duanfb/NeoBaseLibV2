@@ -13,6 +13,7 @@ public interface IBaseRequest {
      * 获取Map参数信息
      *
      * @return String
+     *
      */
     Map<String, Object> getParams();
 
@@ -29,5 +30,16 @@ public interface IBaseRequest {
      * @return Class
      */
     Class getResponseClazz();
+
+    /**
+     * 取消该请求
+     */
+    void cancel();
+
+    /**
+     * 是否是否已取消
+     * @return boolean
+     */
+    boolean isCanceled();
 
 }

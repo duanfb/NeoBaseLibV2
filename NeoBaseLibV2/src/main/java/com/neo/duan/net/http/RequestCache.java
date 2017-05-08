@@ -2,6 +2,7 @@ package com.neo.duan.net.http;
 
 
 import com.neo.duan.net.request.IBaseRequest;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,14 +14,14 @@ import java.util.List;
  * @desc : 管理有关请求的Call的缓存处理
  */
 public class RequestCache {
-    private List<IBaseRequest> callCache = new ArrayList<>();
+    private List<IBaseRequest> reqCache = new ArrayList<>();
 
     public RequestCache() {
-        Collections.synchronizedList(callCache);
+        Collections.synchronizedList(reqCache);
     }
 
     public void add(IBaseRequest request) {
-        callCache.add(0, request);
+        reqCache.add(0, request);
     }
 
     /**
@@ -33,7 +34,7 @@ public class RequestCache {
         if (request == null) {
             return null;
         }
-        Iterator<IBaseRequest> iterator = callCache.iterator();
+        Iterator<IBaseRequest> iterator = reqCache.iterator();
         while (iterator.hasNext()) {
             IBaseRequest req = iterator.next();
             if (request.getApi().equals(req.getApi())) {
@@ -53,7 +54,7 @@ public class RequestCache {
         if (index < 0) {
             return null;
         }
-        return callCache.get(index);
+        return reqCache.get(index);
     }
 
     /**
@@ -62,7 +63,7 @@ public class RequestCache {
      * @return
      */
     public IBaseRequest getLast() {
-        return get(callCache.size() - 1);
+        return get(reqCache.size() - 1);
     }
 
     /**
@@ -76,7 +77,7 @@ public class RequestCache {
             return false;
         }
 
-        Iterator<IBaseRequest> iterator = callCache.iterator();
+        Iterator<IBaseRequest> iterator = reqCache.iterator();
         while (iterator.hasNext()) {
             IBaseRequest req = iterator.next();
             if (request.getApi().equals(req.getApi())) {
@@ -96,7 +97,7 @@ public class RequestCache {
         if (request == null) {
             return;
         }
-        Iterator<IBaseRequest> iterator = callCache.iterator();
+        Iterator<IBaseRequest> iterator = reqCache.iterator();
         while (iterator.hasNext()) {
             IBaseRequest req = iterator.next();
             if (request.getApi().equals(req.getApi())) {
@@ -114,22 +115,22 @@ public class RequestCache {
         if (index < 0) {
             return;
         }
-        IBaseRequest request = callCache.remove(index);
+        IBaseRequest request = reqCache.remove(index);
         request = null;
     }
 
     public int size() {
-        return callCache.size();
+        return reqCache.size();
     }
 
     /**
      * 移除最末尾
      */
     public void removeLast() {
-        remove(callCache.size() - 1);
+        remove(reqCache.size() - 1);
     }
 
     public void clear() {
-        callCache.clear();
+        reqCache.clear();
     }
 }

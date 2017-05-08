@@ -51,6 +51,14 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
 
     @Override
     public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+        //校验请求是否已经标识为取消
+        if (mRequest != null && mRequest.isCanceled()) {
+            if (mListener != null) {
+                mListener.onResponse(BaseHttpResponseListener.RESPONSE_CANCEL, "请求已取消", mTag);
+            }
+            return;
+        }
+
         //第一关卡
         if (response == null) {
             if (mListener != null) {
