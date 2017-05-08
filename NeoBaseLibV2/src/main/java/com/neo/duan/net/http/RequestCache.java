@@ -1,31 +1,26 @@
 package com.neo.duan.net.http;
 
-import com.neo.duan.net.request.IBaseRequest;
 
+import com.neo.duan.net.request.IBaseRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import retrofit2.Call;
 
 /**
  * @author : neo.duan
  * @date : 	 2016/10/11
  * @desc : 管理有关请求的Call的缓存处理
  */
-public class CallCache {
-    private List<CallInfo> callCache = new ArrayList<>();
+public class RequestCache {
+    private List<IBaseRequest> callCache = new ArrayList<>();
 
-    public CallCache() {
+    public RequestCache() {
         Collections.synchronizedList(callCache);
     }
 
-    public void add(IBaseRequest request, Call call) {
-        CallInfo info = new CallInfo();
-        info.key = request.getApi();
-        info.call = call;
-        callCache.add(0, info);
+    public void add(IBaseRequest request) {
+        callCache.add(0, request);
     }
 
     /**
@@ -34,13 +29,15 @@ public class CallCache {
      * @param request
      * @return
      */
-    public Call get(IBaseRequest request) {
+    public IBaseRequest get(IBaseRequest request) {
         if (request == null) {
             return null;
         }
-        for (CallInfo info : callCache) {
-            if (request.getApi().equals(info.key)) {
-                return info.call;
+        Iterator<IBaseRequest> iterator = callCache.iterator();
+        while (iterator.hasNext()) {
+            IBaseRequest req = iterator.next();
+            if (request.getApi().equals(req.getApi())) {
+                return req;
             }
         }
         return null;
@@ -52,15 +49,11 @@ public class CallCache {
      * @param index
      * @return
      */
-    public Call get(int index) {
+    public IBaseRequest get(int index) {
         if (index < 0) {
             return null;
         }
-        CallInfo callInfo = callCache.get(index);
-        if (callInfo == null) {
-            return null;
-        }
-        return callInfo.call;
+        return callCache.get(index);
     }
 
     /**
@@ -68,7 +61,7 @@ public class CallCache {
      *
      * @return
      */
-    public Call getLast() {
+    public IBaseRequest getLast() {
         return get(callCache.size() - 1);
     }
 
@@ -82,8 +75,11 @@ public class CallCache {
         if (request == null) {
             return false;
         }
-        for (CallInfo info : callCache) {
-            if (request.getApi().equals(info.key)) {
+
+        Iterator<IBaseRequest> iterator = callCache.iterator();
+        while (iterator.hasNext()) {
+            IBaseRequest req = iterator.next();
+            if (request.getApi().equals(req.getApi())) {
                 return true;
             }
         }
@@ -100,10 +96,10 @@ public class CallCache {
         if (request == null) {
             return;
         }
-        Iterator<CallInfo> iterator = callCache.iterator();
+        Iterator<IBaseRequest> iterator = callCache.iterator();
         while (iterator.hasNext()) {
-            CallInfo info = iterator.next();
-            if (request.getApi().equals(info.key)) {
+            IBaseRequest req = iterator.next();
+            if (request.getApi().equals(req.getApi())) {
                 iterator.remove();
             }
         }
@@ -118,7 +114,8 @@ public class CallCache {
         if (index < 0) {
             return;
         }
-        callCache.remove(index);
+        IBaseRequest request = callCache.remove(index);
+        request = null;
     }
 
     public int size() {
@@ -134,13 +131,5 @@ public class CallCache {
 
     public void clear() {
         callCache.clear();
-    }
-
-    /**
-     * 代表一个请求数据结构
-     */
-    class CallInfo {
-        public String key;
-        public Call call;
     }
 }
