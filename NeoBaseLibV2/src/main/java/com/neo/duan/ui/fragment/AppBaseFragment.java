@@ -294,9 +294,8 @@ public abstract class AppBaseFragment<P extends BasePresenter> extends Fragment 
         ScreenManager.getInstance().popActivity(topAct);
     }
 
-
     @Override
-    public void onDestroyView() {
+    public void onDetach() {
         //取消界面上所有吐司
         ToastUtil.canAll();
         //解绑EventBus
@@ -306,10 +305,8 @@ public abstract class AppBaseFragment<P extends BasePresenter> extends Fragment 
             mPresenter.onDestroy();
             mPresenter = null;
         }
-
-        super.onDestroyView();
+        super.onDetach();
     }
-
 
     @Override
     public void showLoading() {
