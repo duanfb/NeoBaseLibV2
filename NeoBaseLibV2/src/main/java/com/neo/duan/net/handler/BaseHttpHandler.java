@@ -2,21 +2,14 @@ package com.neo.duan.net.handler;
 
 import android.text.TextUtils;
 
-import com.neo.duan.net.listener.BaseHttpResponseListener;
 import com.neo.duan.net.listener.IHttpListener;
 import com.neo.duan.net.request.IBaseRequest;
-import com.neo.duan.net.response.BaseResponse;
-import com.neo.duan.net.response.ServerResponse;
-import com.neo.duan.utils.JSONUtils;
+import com.neo.duan.net.response.IServerResponse;
 import com.neo.duan.utils.LogUtils;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -24,16 +17,14 @@ import retrofit2.Response;
  * Date: 2017/02/20 10:41
  * Desc: 请求和返回处理器
  */
-public class BaseHttpHandler<T> implements Callback<ServerResponse> {
-    private static final String TAG = BaseHttpHandler.class.getSimpleName();
-    private IBaseRequest mRequest;
-    private IHttpListener mListener;
-    private int mTag;
+public class BaseHttpHandler<T extends IServerResponse> implements IHttpHandler<T> {
+    public static final String TAG = BaseHttpHandler.class.getSimpleName();
+    public IBaseRequest mRequest;
+    public IHttpListener mListener;
 
-    public BaseHttpHandler(IBaseRequest request, IHttpListener listener, int tag) {
+    public BaseHttpHandler(IBaseRequest request, IHttpListener listener) {
         this.mRequest = request;
         this.mListener = listener;
-        this.mTag = tag;
     }
 
     /**
@@ -44,79 +35,27 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
         Map<String, Object> params = mRequest.getParams();
         LogUtils.d(TAG, params);
         if (mListener != null) {
-            mListener.onResponse(BaseHttpResponseListener.RESPONSE_START, mRequest, mTag);
+            mListener.onResponse(IHttpListener.RESPONSE_START, mRequest, IHttpListener.STATUS_UNKNOWN);
         }
     }
 
 
     @Override
-    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+    public void onResponse(String response) {
         //校验请求是否已经标识为取消
         if (mRequest != null && mRequest.isCanceled()) {
             if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_CANCEL, "请求已取消", mTag);
+                mListener.onResponse(IHttpListener.RESPONSE_CANCEL, "请求已取消", IHttpListener.STATUS_UNKNOWN);
             }
             return;
         }
 
         //第一关卡
-        if (response == null) {
+        if (TextUtils.isEmpty(response)) {
             if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
+                mListener.onResponse(IHttpListener.RESPONSE_FAIL, "请求失败，请重试", IHttpListener.STATUS_UNKNOWN);
             }
             return;
-        }
-
-        //第二关卡
-        ServerResponse serverResp = response.body();
-        if (serverResp == null) {
-            if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
-            }
-            return;
-        }
-
-        //第三关卡
-        LogUtils.d(TAG, "BaseHttpHandler  onResponse---->" + serverResp.toString());
-        if (!serverResp.isSuccess()) {
-            if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
-            }
-            return;
-        }
-
-        //第四关卡
-        String serverRespParams = serverResp.getParams();
-        if (TextUtils.isEmpty(serverRespParams)) {
-            if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
-            }
-            return;
-        }
-
-        //第五关卡:先用BaseResponse封装，判断是否成功
-        BaseResponse resp = JSONUtils.parseObject(serverRespParams, BaseResponse.class);
-        if (resp == null) {
-            if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "服务器开了点小差，请稍后再试", mTag);
-            }
-            return;
-        }
-
-        //第六关卡
-        if (!resp.isSuccess()) {
-            if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, resp, mTag);
-            }
-            return;
-        }
-
-        //第九关:再将serverRespParams序列化成Model进行分发
-        Object infoResp = JSONUtils.parseObject(serverRespParams, getResponseClazz());
-
-        //过关：回调成功
-        if (mListener != null) {
-            mListener.onResponse(BaseHttpResponseListener.RESPONSE_SUCCESS, infoResp, mTag);
         }
     }
 
@@ -125,16 +64,16 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
      */
     public void onNetWorkErrorResponse() {
         if (mListener != null) {
-            mListener.onResponse(BaseHttpResponseListener.RESPONSE_ERROR,
-                    "网络连接不畅，请检查一下您的网络！", mTag);
+            mListener.onResponse(IHttpListener.RESPONSE_ERROR,
+                    "网络连接不畅，请检查一下您的网络！", IHttpListener.STATUS_UNKNOWN);
         }
     }
 
     @Override
-    public void onFailure(Call<ServerResponse> call, Throwable t) {
+    public void onFailure(Throwable t) {
         if (t == null) {
             if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
+                mListener.onResponse(IHttpListener.RESPONSE_FAIL, "请求失败，请重试", IHttpListener.STATUS_UNKNOWN);
             }
             return;
         }
@@ -143,7 +82,7 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
         //请求取消
         if (t instanceof IOException && "Canceled".equals(t.getMessage())) {
             if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_CANCEL, "请求已取消", mTag);
+                mListener.onResponse(IHttpListener.RESPONSE_CANCEL, "请求已取消", IHttpListener.STATUS_UNKNOWN);
             }
             return;
         }
@@ -151,18 +90,22 @@ public class BaseHttpHandler<T> implements Callback<ServerResponse> {
         //请求超时
         if (t instanceof SocketTimeoutException) {
             if (mListener != null) {
-                mListener.onResponse(BaseHttpResponseListener.RESPONSE_DONE, "请求超时，请检查网络连接", mTag);
+                mListener.onResponse(IHttpListener.RESPONSE_DONE, "请求超时，请检查网络连接", IHttpListener.STATUS_UNKNOWN);
             }
         }
 
         //其他情况统一为失败
         if (mListener != null) {
-            mListener.onResponse(BaseHttpResponseListener.RESPONSE_FAIL, "请求失败，请重试", mTag);
+            mListener.onResponse(IHttpListener.RESPONSE_FAIL, "请求失败，请重试", IHttpListener.STATUS_UNKNOWN);
         }
     }
 
     public IBaseRequest getRequest() {
         return mRequest;
+    }
+
+    public Class<? extends IServerResponse> getServerResponseClazz() {
+        return mRequest.getServerResponseClazz();
     }
 
     public Class<?> getResponseClazz() {

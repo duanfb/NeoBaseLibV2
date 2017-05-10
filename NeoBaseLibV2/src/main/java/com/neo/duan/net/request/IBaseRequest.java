@@ -1,5 +1,7 @@
 package com.neo.duan.net.request;
 
+import com.neo.duan.net.response.IServerResponse;
+
 import java.util.Map;
 
 /**
@@ -23,6 +25,13 @@ public interface IBaseRequest {
      * @return String
      */
     String getApi();
+
+    /**
+     * 获取服务器器返回数据Class
+     *
+     * @return Class
+     */
+    Class<? extends IServerResponse> getServerResponseClazz();
 
     /**
      * 获取返回数据Class

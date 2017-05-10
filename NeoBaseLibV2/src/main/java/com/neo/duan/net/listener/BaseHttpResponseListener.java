@@ -3,7 +3,6 @@ package com.neo.duan.net.listener;
 
 
 import com.neo.duan.mvp.view.base.IBaseView;
-import com.neo.duan.net.response.BaseResponse;
 import com.neo.duan.utils.LogUtils;
 
 import java.lang.ref.WeakReference;
@@ -23,7 +22,7 @@ public class BaseHttpResponseListener implements IHttpListener {
     }
 
     @Override
-    public void onResponse(int code, Object jsonObject, int tag) {
+    public void onResponse(int code, Object jsonObject, String status) {
         switch (code) {
             case RESPONSE_START: //请求开始
                 onStart();
@@ -33,13 +32,9 @@ public class BaseHttpResponseListener implements IHttpListener {
                 break;
             case RESPONSE_FAIL://请求失败：服务器返回错误或者超时，弹出提示
                 if (jsonObject == null) {
-                    onFail(-999, "服务器开了点小差，请稍后再试");
+                    onFail(status, "服务器开了点小差，请稍后再试");
                 } else {
-                    if (jsonObject instanceof BaseResponse) {
-                        onFail(((BaseResponse) jsonObject).getStatus(), ((BaseResponse) jsonObject).getErrorMessage());
-                    } else {
-                        onFail(-999, jsonObject.toString());
-                    }
+                    onFail(status, jsonObject.toString());
                 }
                 break;
             case RESPONSE_CANCEL://请求已取消
@@ -68,7 +63,7 @@ public class BaseHttpResponseListener implements IHttpListener {
         }
     }
 
-    public void onFail(int status, String msg) {
+    public void onFail(String status, String msg) {
         LogUtils.e(TAG, msg);
         IBaseView baseView = reference.get();
         if (baseView != null) {

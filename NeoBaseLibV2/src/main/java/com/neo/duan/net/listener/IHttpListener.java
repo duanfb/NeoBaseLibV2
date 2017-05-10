@@ -6,6 +6,12 @@ package com.neo.duan.net.listener;
  * Desc: http请求监听器基类
  */
 public interface IHttpListener {
+
+    /**
+     * 服务器返回的未知状态码
+     */
+    String STATUS_UNKNOWN = "-999";
+
     /**
      * 发起http请求前
      */
@@ -41,7 +47,7 @@ public interface IHttpListener {
      *
      * @param code       状态标记
      * @param jsonObject 服务器返回数据..只有成功jsonObject返回Modle,其他都是String提示信息
-     * @param tag        请求标记
+     * @param status        服务器返回的状态码
      */
-    void onResponse(int code, Object jsonObject, int tag);
+    void onResponse(int code, Object jsonObject, String status);
 }

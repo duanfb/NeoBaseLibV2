@@ -3,7 +3,6 @@ package com.neo.duan.net.http;
 
 import com.neo.duan.AppBaseApplication;
 import com.neo.duan.net.HttpLoaderConfiguration;
-import com.neo.duan.net.response.ServerResponse;
 import com.neo.duan.utils.NetWorkUtils;
 
 import java.io.File;
@@ -122,6 +121,7 @@ public class BaseHttpLoader {
 
     /**
      * 添加头部拦截器
+     *
      * @return Interceptor
      */
     private Interceptor createHeaderInterceptor() {
@@ -151,12 +151,12 @@ public class BaseHttpLoader {
          * 通用post请求
          *
          * @param paramMap 参数Map
-         * @param url url
+         * @param url      url
          * @return Call
          */
         @FormUrlEncoded
         @POST
-        Call<ServerResponse> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
+        Call<String> sendPost(@FieldMap Map<String, Object> paramMap, @Url String url);
 
         /**
          * 通用get请求，自己拼接带参数的请求地址
@@ -165,7 +165,7 @@ public class BaseHttpLoader {
          * @return Call
          */
         @GET
-        Call<ServerResponse> sendGet(@Url String url);
+        Call<String> sendGet(@Url String url);
 
         /**
          * 通用上传请求
@@ -174,7 +174,7 @@ public class BaseHttpLoader {
          */
         @Multipart
         @POST
-        Call<ServerResponse> upload(@PartMap Map<String, RequestBody> params,
-                                  @Part MultipartBody.Part file, @Url String url);
+        Call<String> upload(@PartMap Map<String, RequestBody> params,
+                                     @Part MultipartBody.Part file, @Url String url);
     }
 }

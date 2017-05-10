@@ -1,7 +1,6 @@
 package com.neo.duan.net;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.neo.duan.net.handler.BaseHttpHandler;
 
 /**
  * Author: neo.duan
@@ -14,7 +13,7 @@ public final class HttpLoaderConfiguration {
     public final String cacheDir; //数据缓存目录
     public final long cacheTime; //缓存时长
     public final long timeout; //超时时间
-    public final List<Class> unCancelReqList; //不需要拦截的请求
+    public final Class<? extends BaseHttpHandler> handler; //http返回处理器
 
     public HttpLoaderConfiguration(Builder builder) {
         this.serverHost = builder.serverHost;
@@ -22,7 +21,7 @@ public final class HttpLoaderConfiguration {
         this.cacheDir = builder.cacheDir;
         this.cacheTime = builder.cacheTime;
         this.timeout = builder.timeout;
-        this.unCancelReqList = builder.unCancelReqList;
+        this.handler = builder.handler;
     }
 
     public static HttpLoaderConfiguration createDefault() {
@@ -39,7 +38,7 @@ public final class HttpLoaderConfiguration {
         String cacheDir; //数据缓存目录
         long cacheTime; //缓存时长
         long timeout; //超时时间秒
-        List<Class> unCancelReqList; //不需要拦截的请求
+        Class<? extends BaseHttpHandler> handler; //http处理器
 
         public Builder() {
             this.serverHost = "http://www.baidu.com/abc/";
@@ -47,7 +46,7 @@ public final class HttpLoaderConfiguration {
             this.cacheDir = "appCache";
             this.cacheTime = 60 * 60 * 24 * 28; //默认4周
             this.timeout = 15; //默认15秒
-            this.unCancelReqList = new ArrayList<>();
+            this.handler = null; //不设默认，HttpLoader将处理
         }
 
         public Builder setServerHost(String serverHost) {
@@ -75,8 +74,8 @@ public final class HttpLoaderConfiguration {
             return this;
         }
 
-        public Builder setUnCancelReqList(List<Class> unCancelReqList) {
-            this.unCancelReqList = unCancelReqList;
+        public Builder setHttpHandler(Class<? extends BaseHttpHandler> handler) {
+            this.handler = handler;
             return this;
         }
 

@@ -2,8 +2,11 @@ package com.neo.duan.net.http;
 
 
 import com.neo.duan.AppBaseApplication;
+import com.neo.duan.net.DefaultCallback;
 import com.neo.duan.net.HttpLoaderConfiguration;
 import com.neo.duan.net.handler.BaseHttpHandler;
+import com.neo.duan.net.handler.DefaultHttpHandler;
+import com.neo.duan.net.listener.IHttpListener;
 import com.neo.duan.net.request.IBaseRequest;
 import com.neo.duan.utils.LogUtils;
 import com.neo.duan.utils.NetWorkUtils;
@@ -52,22 +55,27 @@ public class HttpLoader extends BaseHttpLoader {
 
     /**
      * 发送请求
-     *
-     * @param handler
      */
-    public void sendRequest(BaseHttpHandler handler) {
-        checkHandler(handler);
-        //通过校验，调用请求开始
+    public void sendRequest(IBaseRequest request, IHttpListener listener) {
+        checkRequest(request);
+
+        //校验处理器，未配置则使用默认处理器
+        Class handlerClz = configuration.handler;
+        BaseHttpHandler handler;
+        if (handlerClz == null) {
+            handler = new DefaultHttpHandler(request, listener);
+        } else {
+            handler = (BaseHttpHandler) newHandlerInstance(handlerClz, request, listener);
+        }
+
+        //调用请求开始
         handler.onStart();
 
         //校验网络是否正常
         if (!NetWorkUtils.isAvailable(AppBaseApplication.getInstance())) {
             handler.onNetWorkErrorResponse();
-            //TODO 根据产品需求要不要获取缓存数据
             return;
         }
-
-        IBaseRequest request = handler.getRequest();
 
         //发送请求前，校验请求缓存池
         if (mRequestCache.size() > MAX_CALL_COUNT) {
@@ -83,17 +91,12 @@ public class HttpLoader extends BaseHttpLoader {
         }
 
         //发送请求
-        mApiService.sendPost(request.getParams(), request.getApi()).enqueue(handler);
+        DefaultCallback callback = new DefaultCallback(handler);
+        mApiService.sendPost(request.getParams(), request.getApi()).enqueue(callback);
     }
 
-    private void checkHandler(BaseHttpHandler handler) {
-        //校验handler处理对象是否为空，抛异常，调用者处理
-        if (handler == null) {
-            throw new IllegalArgumentException("http handler object is null");
-        }
-
+    private void checkRequest(IBaseRequest request) {
         //校验请求对象是否为空
-        IBaseRequest request = handler.getRequest();
         if (request == null) {
             throw new IllegalArgumentException("http handler the request object is null");
         }
@@ -121,5 +124,22 @@ public class HttpLoader extends BaseHttpLoader {
 
     public static RequestBody toRequestBody (String value) {
         return RequestBody.create(MediaType.parse("text/plain"), value) ;
+    }
+
+    /**
+     * 创建Handler实例
+     */
+    private <T> T newHandlerInstance(Class<T> cls, IBaseRequest request, IHttpListener listener) {
+        try {
+            //参数类型数组
+            Class[] parameterTypes = {IBaseRequest.class, IHttpListener.class};
+            //参数值
+            Object[] parameters = {request, listener};
+            return (T) cls.getConstructor(parameterTypes).newInstance(parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.e(TAG, e.getMessage());
+        }
+        return null;
     }
 }
