@@ -34,7 +34,7 @@ public class ScreenManager {
      * @param activity
      */
     public void popActivity(Activity activity) {
-        if (activity != null) {
+        if (activity != null && !activity.isFinishing()) {
             activity.finish();
             activityStack.remove(activity);
             activity = null;
@@ -113,6 +113,9 @@ public class ScreenManager {
                     popActivity(activity);
                 }
             }
+        } catch (Exception ex) {
+            System.out.println("ScreenManager:popAllActivity---->"
+                    + ex.getMessage());
         } finally {
             activity = null;
         }
