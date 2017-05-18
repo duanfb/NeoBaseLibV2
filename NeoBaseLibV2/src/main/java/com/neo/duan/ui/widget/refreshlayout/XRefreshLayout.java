@@ -57,6 +57,11 @@ public class XRefreshLayout extends PtrClassicFrameLayout {
             }
         });
 
+        //添加自定义加载头
+//        RefreshHeaderView headerView = new RefreshHeaderView(getContext());
+//        setHeaderView(headerView);
+//        addPtrUIHandler(headerView);
+
         this.setLastUpdateTimeRelateObject(this);
         // the following are default settings
         this.setResistance(1.7f);
