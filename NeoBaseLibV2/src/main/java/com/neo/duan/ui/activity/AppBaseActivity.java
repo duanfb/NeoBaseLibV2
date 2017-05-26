@@ -305,8 +305,8 @@ public abstract class AppBaseActivity<P extends BasePresenter>  extends AppCompa
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         onBackClick();
+        super.onBackPressed();
     }
 
     @Override
