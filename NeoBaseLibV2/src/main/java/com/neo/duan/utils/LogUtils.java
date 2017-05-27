@@ -3,6 +3,7 @@ package com.neo.duan.utils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
+import com.neo.duan.BuildConfig;
 import com.orhanobut.logger.Logger;
 
 /**
@@ -24,8 +25,7 @@ public class LogUtils {
      * @return 是否输出该级别的日志
      */
     private static boolean shouldLog(int level, String tag) {
-        return true;
-//        return BuildConfig.LOG_DEBUG || level >= LOG_LEVEL || Log.isLoggable(tag, level) || Log.isLoggable("XX", Log.VERBOSE);
+        return BuildConfig.LOG_DEBUG || level >= LOG_LEVEL || Log.isLoggable(tag, level) || Log.isLoggable("XX", Log.VERBOSE);
     }
 
 
